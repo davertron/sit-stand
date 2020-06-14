@@ -7,7 +7,15 @@ import './App.css';
 import SitStandIcon from './SitStandIcon';
 import EditEntryForm from './EditEntryForm';
 
-import {ArrowLeftIcon, ArrowRightIcon, Button, Pane, TickCircleIcon} from 'evergreen-ui';
+import {
+    ArrowLeftIcon,
+    ArrowRightIcon,
+    Button,
+    CircleArrowUpIcon,
+    CircleArrowDownIcon,
+    Pane,
+    TickCircleIcon,
+} from 'evergreen-ui';
 
 import {
     formatDate,
@@ -39,7 +47,6 @@ function getEntries(db = null, start = getStartOfToday(), end) {
     if (end) {
         query = query.where('date', '<', end);
     }
-    console.log(start, end);
     return query.get().then(qs => {
         let entries = [];
         qs.forEach(doc => {
@@ -77,7 +84,6 @@ function App() {
             if (user) {
                 //console.log(user);
                 const db = firebase.firestore();
-                console.log('setting db');
                 setDb(db);
                 window.__db = db;
             } else {
@@ -92,10 +98,7 @@ function App() {
                         // The signed-in user info.
                         var user = result.user;
 
-                        console.log(user);
-
                         const db = firebase.firestore();
-                        console.log('setting db');
                         setDb(db);
                     })
                     .catch(error => {
@@ -316,14 +319,28 @@ function App() {
             <h2>Entries for {formattedDate}</h2>
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                 <div>
-                    <Button onClick={() => addEntry('SIT')} height={24}>Sit</Button>{' '}
-                    <Button onClick={() => addEntry('STAND')} height={24}>Stand</Button>{' '}
-                    <Button onClick={() => addEntry('DONE')} height={24}><TickCircleIcon color="success" marginRight="4px" />Done</Button>
+                    <Button onClick={() => addEntry('SIT')} height={24}>
+                        <CircleArrowDownIcon color="danger" marginRight="4px" />Sit
+                    </Button>{' '}
+                    <Button onClick={() => addEntry('STAND')} height={24}>
+                        <CircleArrowUpIcon color="success" marginRight="4px" />Stand
+                    </Button>{' '}
+                    <Button onClick={() => addEntry('DONE')} height={24}>
+                        <TickCircleIcon color="success" marginRight="4px" />Done
+                    </Button>
                 </div>
                 <Pane display="flex">
-                    <Button onClick={() => goBackOneDay()} height={24} marginRight="4px"><ArrowLeftIcon marginRight="4px" />Previous Day</Button>
-                    <Button onClick={() => goForwardOneDay()} height={24} visibility={isCurrentDateToday ? 'hidden' : 'visible'}>
-                        Next Day <ArrowRightIcon marginLeft="4px" /> 
+                    <Button
+                        onClick={() => goBackOneDay()}
+                        height={24}
+                        marginRight="4px">
+                        <ArrowLeftIcon marginRight="4px" />Previous Day
+                    </Button>
+                    <Button
+                        onClick={() => goForwardOneDay()}
+                        height={24}
+                        visibility={isCurrentDateToday ? 'hidden' : 'visible'}>
+                        Next Day <ArrowRightIcon marginLeft="4px" />
                     </Button>
                 </Pane>
             </div>
