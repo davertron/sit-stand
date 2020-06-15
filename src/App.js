@@ -339,7 +339,7 @@ function App() {
                     <Button
                         onClick={() => goForwardOneDay()}
                         height={24}
-                        visibility={isCurrentDateToday ? 'hidden' : 'visible'}>
+                        disabled={isCurrentDateToday}>
                         Next Day <ArrowRightIcon marginLeft="4px" />
                     </Button>
                 </Pane>
