@@ -391,6 +391,7 @@ function App() {
                     }}
                 />
                 {sitStandMarkers.map((marker, i) => {
+                    let isLast = i === sitStandMarkers.length - 1;
                     return (
                         <div
                             key={i}
@@ -404,6 +405,8 @@ function App() {
                                 textAlign: 'center',
                                 height: '60px',
                                 border: '4px solid black',
+                                zIndex: isLast ? '0' : '1',
+                                pointerEvents: isLast ? 'none' : 'auto'
                             }}>
                             <SitStandIcon
                                 entry={marker.entry}

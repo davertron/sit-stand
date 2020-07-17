@@ -14,12 +14,12 @@ export default function SitStandIcon({ entry: { type }, onClick }) {
           textAlign: "middle",
           position: "relative",
           bottom: "-16px",
-          fontWeight: "bold"
+          fontWeight: "bold",
         }}
         >{label}</span>;
   } else if (type === "STAND") {
     return <svg
-        style={{ height: "48px", position: "relative", bottom: "-12px", cursor: 'pointer' }}
+        style={{ height: "48px", position: "relative", bottom: "-12px", cursor: 'pointer'}}
         x="0px"
         y="0px"
         viewBox="0 0 100 125"
@@ -55,7 +55,7 @@ export default function SitStandIcon({ entry: { type }, onClick }) {
       </svg>
   } else {
     return <svg
-        style={{ height: "48px", position: "relative", bottom: "-12px", cursor: 'pointer' }}
+        style={{ height: "48px", position: "relative", bottom: "-12px", cursor: 'pointer'}}
         data-name="Layer 1"
         viewBox="0 0 64 80"
         x="0px"
