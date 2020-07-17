@@ -5,7 +5,7 @@ export default function SitStandIcon({ entry: { type }, onClick }) {
     let isDone = type === "DONE"; 
     let label = isDone ? "Done!" : "Now";
     return <span
-        onClick={isDone && onClick}
+        onClick={isDone ? onClick: null}
         style={{
           cursor: isDone ? 'pointer' : '',
           display: "inline-block",
