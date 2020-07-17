@@ -2,9 +2,12 @@ import React from 'react';
 
 export default function SitStandIcon({ entry: { type }, onClick }) {
   if (["DONE", "NOW"].includes(type)) {
-    let label = type === "DONE" ? "Done!" : "Now";
+    let isDone = type === "DONE"; 
+    let label = isDone ? "Done!" : "Now";
     return <span
+        onClick={isDone && onClick}
         style={{
+          cursor: isDone ? 'pointer' : '',
           display: "inline-block",
           height: "40px",
           padding: "4px",
@@ -16,7 +19,7 @@ export default function SitStandIcon({ entry: { type }, onClick }) {
         >{label}</span>;
   } else if (type === "STAND") {
     return <svg
-        style={{ height: "48px", position: "relative", bottom: "-12px" }}
+        style={{ height: "48px", position: "relative", bottom: "-12px", cursor: 'pointer' }}
         x="0px"
         y="0px"
         viewBox="0 0 100 125"
@@ -52,7 +55,7 @@ export default function SitStandIcon({ entry: { type }, onClick }) {
       </svg>
   } else {
     return <svg
-        style={{ height: "48px", position: "relative", bottom: "-12px" }}
+        style={{ height: "48px", position: "relative", bottom: "-12px", cursor: 'pointer' }}
         data-name="Layer 1"
         viewBox="0 0 64 80"
         x="0px"
