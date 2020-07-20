@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import firebase from 'firebase/app';
-import * as firebaseui from 'firebaseui';
-import 'firebase/firestore';
+import React, { useEffect, useState } from "react";
+import firebase from "firebase/app";
+import * as firebaseui from "firebaseui";
+import "firebase/firestore";
 
-import './App.css';
-import SitStandIcon from './SitStandIcon';
-import EditEntryForm from './EditEntryForm';
+import "./App.css";
+import SitStandIcon from "./SitStandIcon";
+import DurationMarker from "./DurationMarker";
+import EditEntryForm from "./EditEntryForm";
 
 import {
     ArrowLeftIcon,
@@ -15,7 +16,7 @@ import {
     CircleArrowDownIcon,
     Pane,
     TickCircleIcon,
-} from 'evergreen-ui';
+} from "evergreen-ui";
 
 import {
     formatDate,
@@ -25,17 +26,17 @@ import {
     isToday,
     parseStartAndEndDates,
     scale,
-} from './utils';
+} from "./utils";
 
 const MILLIS_IN_A_DAY = 86400000;
 
 function smartGetEntries(db) {
-    let {start, end} = parseStartAndEndDates();
+    let { start, end } = parseStartAndEndDates();
     if (start && end) {
         return getEntries(
             db,
             new Date(parseInt(start, 10)),
-            new Date(parseInt(end, 10)),
+            new Date(parseInt(end, 10))
         );
     } else {
         return getEntries(db);
@@ -43,18 +44,21 @@ function smartGetEntries(db) {
 }
 
 function getEntries(db = null, start = getStartOfToday(), end) {
-    let query = db.collection('entries').where('date', '>', start);
+    let query = db.collection("entries").where("date", ">", start);
     if (end) {
-        query = query.where('date', '<', end);
+        query = query.where("date", "<", end);
     }
-    return query.get().then(qs => {
+    return query.get().then((qs) => {
         let entries = [];
-        qs.forEach(doc => {
-            entries.push({id: doc.id, ...doc.data()});
+        qs.forEach((doc) => {
+            entries.push({ id: doc.id, ...doc.data() });
         });
 
         // Convert date field to millis...for now
-        entries = entries.map(e => ({...e, date: e.date.toDate().getTime()}));
+        entries = entries.map((e) => ({
+            ...e,
+            date: e.date.toDate().getTime(),
+        }));
         console.log(entries);
 
         return entries;
@@ -70,17 +74,17 @@ function App() {
     useEffect(() => {
         // Initialize Firebase
         firebase.initializeApp({
-            apiKey: 'AIzaSyCRpn2xmJUyKT4IjR5_8MTTO045s0omkpU',
-            authDomain: 'sit-stand-967f2.firebaseapp.com',
-            databaseURL: 'https://sit-stand-967f2.firebaseio.com',
-            projectId: 'sit-stand-967f2',
-            storageBucket: 'sit-stand-967f2.appspot.com',
-            messagingSenderId: '213155972077',
-            appId: '1:213155972077:web:9aa1d811fc8e1bd5b15de4',
-            measurementId: 'G-10G81RB4N4',
+            apiKey: "AIzaSyCRpn2xmJUyKT4IjR5_8MTTO045s0omkpU",
+            authDomain: "sit-stand-967f2.firebaseapp.com",
+            databaseURL: "https://sit-stand-967f2.firebaseio.com",
+            projectId: "sit-stand-967f2",
+            storageBucket: "sit-stand-967f2.appspot.com",
+            messagingSenderId: "213155972077",
+            appId: "1:213155972077:web:9aa1d811fc8e1bd5b15de4",
+            measurementId: "G-10G81RB4N4",
         });
 
-        firebase.auth().onAuthStateChanged(user => {
+        firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 //console.log(user);
                 const db = firebase.firestore();
@@ -92,7 +96,7 @@ function App() {
                 firebase
                     .auth()
                     .signInWithPopup(provider)
-                    .then(result => {
+                    .then((result) => {
                         // This gives you a Google Access Token. You can use it to access the Google API.
                         //var token = result.credential.accessToken;
                         // The signed-in user info.
@@ -101,7 +105,7 @@ function App() {
                         const db = firebase.firestore();
                         setDb(db);
                     })
-                    .catch(error => {
+                    .catch((error) => {
                         console.error(error);
                         // Handle Errors here.
                         //let errorCode = error.code;
@@ -117,7 +121,7 @@ function App() {
     }, []);
 
     let date;
-    let {start} = parseStartAndEndDates(window.location.search);
+    let { start } = parseStartAndEndDates(window.location.search);
     if (start) {
         date = new Date(parseInt(start, 10));
     } else {
@@ -125,33 +129,30 @@ function App() {
     }
 
     const isCurrentDateToday = isToday(date);
-    const formattedDate = isToday(date) ? 'Today' : formatDate(date);
+    const formattedDate = isToday(date) ? "Today" : formatDate(date);
 
     useEffect(() => {
-        let intervalId = setInterval(() => setTicks(s => (s += 1)), 30000); // We show time in minutes so update every 30 seconds.
+        let intervalId = setInterval(() => setTicks((s) => (s += 1)), 30000); // We show time in minutes so update every 30 seconds.
 
         return () => clearInterval(intervalId);
     }, []);
 
-    useEffect(
-        () => {
-            if (db) {
-                smartGetEntries(db).then(setEntries);
-                let {start} = parseStartAndEndDates();
+    useEffect(() => {
+        if (db) {
+            smartGetEntries(db).then(setEntries);
+            let { start } = parseStartAndEndDates();
 
-                let intervalId = setInterval(() => {
-                    let {start: s} = parseStartAndEndDates();
-                    if (s && s !== start) {
-                        start = s;
-                        smartGetEntries(db).then(setEntries);
-                    }
-                }, 100);
+            let intervalId = setInterval(() => {
+                let { start: s } = parseStartAndEndDates();
+                if (s && s !== start) {
+                    start = s;
+                    smartGetEntries(db).then(setEntries);
+                }
+            }, 100);
 
-                return () => clearInterval(intervalId);
-            }
-        },
-        [db],
-    );
+            return () => clearInterval(intervalId);
+        }
+    }, [db]);
 
     function addEntry(type) {
         let now = new Date();
@@ -166,8 +167,7 @@ function App() {
             entryDate = sameTimeOnDay;
             //time = sameTimeOnDay.getTime();
         }
-        db
-            .collection('entries')
+        db.collection("entries")
             .add({
                 date: entryDate,
                 type,
@@ -176,24 +176,23 @@ function App() {
             .then(setEntries);
     }
 
-    function updateEntry({date, id, type}) {
-        const entryRef = db.collection('entries').doc(id);
+    function updateEntry({ date, id, type }) {
+        const entryRef = db.collection("entries").doc(id);
         entryRef
-            .update({date, type})
+            .update({ date, type })
             .then(() => smartGetEntries(db))
-            .then(entries => {
+            .then((entries) => {
                 setEntries(entries);
                 setEditingEntry(null);
             });
     }
 
-    function deleteEntry({id}) {
-        db
-            .collection('entries')
+    function deleteEntry({ id }) {
+        db.collection("entries")
             .doc(id)
             .delete()
             .then(() => smartGetEntries(db))
-            .then(entries => {
+            .then((entries) => {
                 setEntries(entries);
                 setEditingEntry(null);
             });
@@ -202,7 +201,7 @@ function App() {
     function goBackOneDay() {
         let startOfPrevious;
         let endOfPrevious;
-        let {start, end} = parseStartAndEndDates();
+        let { start, end } = parseStartAndEndDates();
         if (start && end) {
             startOfPrevious = parseInt(start, 10) - MILLIS_IN_A_DAY;
             endOfPrevious = parseInt(end, 10) - MILLIS_IN_A_DAY;
@@ -217,7 +216,7 @@ function App() {
             null,
             window.location.origin +
                 window.location.pathname +
-                `?start=${startOfPrevious}&end=${endOfPrevious}`,
+                `?start=${startOfPrevious}&end=${endOfPrevious}`
         );
     }
 
@@ -238,14 +237,14 @@ function App() {
                 null,
                 window.location.origin +
                     window.location.pathname +
-                    `?start=${startOfPrevious}&end=${endOfPrevious}`,
+                    `?start=${startOfPrevious}&end=${endOfPrevious}`
             );
         }
     }
 
     let lastEntry = entries.slice(-1).pop();
-    if (isCurrentDateToday && lastEntry && lastEntry.type !== 'DONE') {
-        lastEntry = {date: Date.now(), type: 'NOW'};
+    if (isCurrentDateToday && lastEntry && lastEntry.type !== "DONE") {
+        lastEntry = { date: Date.now(), type: "NOW" };
         entries = [...entries, lastEntry];
     }
     const startTime = entries.length > 0 ? entries[0].date : 0;
@@ -268,7 +267,7 @@ function App() {
         let duration = 0;
         let nextTime;
         if (i === entries.length - 1) {
-            if (e.type !== 'DONE') {
+            if (e.type !== "DONE") {
                 nextTime = Date.now();
             } else {
                 nextTime = e.date;
@@ -277,7 +276,7 @@ function App() {
             nextTime = entries[i + 1].date;
         }
         duration = nextTime - e.date;
-        if (e.type === 'SIT') {
+        if (e.type === "SIT") {
             totalSitTime += duration;
         } else {
             totalStandTime += duration;
@@ -295,7 +294,7 @@ function App() {
                 duration,
                 formattedDuration: formatDurationToHoursAndMinutes(
                     duration,
-                    true,
+                    true
                 ),
             });
         }
@@ -304,111 +303,127 @@ function App() {
     let totalStandPercent = totalStandTime / totalDuration;
 
     let statStyles = {
-        display: 'inline-block',
-        position: 'relative',
-        border: '1px solid black',
-        boxSizing: 'border-box',
-        textAlign: 'center',
-        backgroundColor: 'black',
-        color: 'white',
-        padding: '8px',
+        display: "inline-block",
+        position: "relative",
+        border: "1px solid black",
+        boxSizing: "border-box",
+        textAlign: "center",
+        backgroundColor: "black",
+        color: "white",
+        padding: "8px",
     };
 
     return (
         <Pane padding="16px">
             <h2>Entries for {formattedDate}</h2>
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
-                    <Button onClick={() => addEntry('SIT')} height={24}>
-                        <CircleArrowDownIcon color="danger" marginRight="4px" />Sit
-                    </Button>{' '}
-                    <Button onClick={() => addEntry('STAND')} height={24}>
-                        <CircleArrowUpIcon color="success" marginRight="4px" />Stand
-                    </Button>{' '}
-                    <Button onClick={() => addEntry('DONE')} height={24}>
-                        <TickCircleIcon color="success" marginRight="4px" />Done
+                    <Button onClick={() => addEntry("SIT")} height={24}>
+                        <CircleArrowDownIcon color="danger" marginRight="4px" />
+                        Sit
+                    </Button>{" "}
+                    <Button onClick={() => addEntry("STAND")} height={24}>
+                        <CircleArrowUpIcon color="success" marginRight="4px" />
+                        Stand
+                    </Button>{" "}
+                    <Button onClick={() => addEntry("DONE")} height={24}>
+                        <TickCircleIcon color="success" marginRight="4px" />
+                        Done
                     </Button>
                 </div>
                 <Pane display="flex">
                     <Button
                         onClick={() => goBackOneDay()}
                         height={24}
-                        marginRight="4px">
-                        <ArrowLeftIcon marginRight="4px" />Previous Day
+                        marginRight="4px"
+                    >
+                        <ArrowLeftIcon marginRight="4px" />
+                        Previous Day
                     </Button>
                     <Button
                         onClick={() => goForwardOneDay()}
                         height={24}
-                        disabled={isCurrentDateToday}>
+                        disabled={isCurrentDateToday}
+                    >
                         Next Day <ArrowRightIcon marginLeft="4px" />
                     </Button>
                 </Pane>
             </div>
-            <div style={{margin: '10px auto'}}>
+            <div style={{ margin: "10px auto" }}>
                 <div
-                    style={{...statStyles, width: totalSitPercent * 100 + '%'}}>
+                    style={{
+                        ...statStyles,
+                        width: totalSitPercent * 100 + "%",
+                    }}
+                >
                     <div>Sit</div>
                     <div>{formatDurationToHoursAndMinutes(totalSitTime)}</div>
                     <div
                         style={{
-                            position: 'absolute',
-                            right: '8px',
-                            top: '50%',
-                            marginTop: '-12px',
-                            fontSize: '24px',
-                        }}>
-                        {Math.round(totalSitPercent * 100) + '%'}
+                            position: "absolute",
+                            right: "8px",
+                            top: "50%",
+                            marginTop: "-12px",
+                            fontSize: "24px",
+                        }}
+                    >
+                        {Math.round(totalSitPercent * 100) + "%"}
                     </div>
                 </div>
                 <div
                     style={{
                         ...statStyles,
-                        width: totalStandPercent * 100 + '%',
-                        backgroundColor: 'white',
-                        color: 'black',
-                    }}>
+                        width: totalStandPercent * 100 + "%",
+                        backgroundColor: "white",
+                        color: "black",
+                    }}
+                >
                     <div>Stand</div>
                     <div>{formatDurationToHoursAndMinutes(totalStandTime)}</div>
                     <div
                         style={{
-                            position: 'absolute',
-                            left: '8px',
-                            top: '50%',
-                            marginTop: '-12px',
-                            fontSize: '24px',
-                        }}>
-                        {Math.round(totalStandPercent * 100) + '%'}
+                            position: "absolute",
+                            left: "8px",
+                            top: "50%",
+                            marginTop: "-12px",
+                            fontSize: "24px",
+                        }}
+                    >
+                        {Math.round(totalStandPercent * 100) + "%"}
                     </div>
                 </div>
             </div>
             <Pane height="100px" width="96%" margin="auto" position="relative">
                 <div
                     style={{
-                        height: '8px',
-                        backgroundColor: 'black',
-                        position: 'relative',
-                        top: '36px',
+                        height: "8px",
+                        backgroundColor: "black",
+                        position: "relative",
+                        top: "36px",
                     }}
                 />
                 {sitStandMarkers.map((marker, i) => {
                     let isLast = i === sitStandMarkers.length - 1;
-                    let isNow = marker.entry.type === 'NOW';
+                    let isNow = marker.entry.type === "NOW";
                     return (
                         <div
+                            className="sit-stand-marker"
                             key={i}
                             style={{
-                                position: 'absolute',
+                                position: "absolute",
                                 left: `${marker.position}%`,
-                                transform: 'translateX(-50%)',
-                                background: 'white',
-                                borderRadius: '36px',
-                                width: '60px',
-                                textAlign: 'center',
-                                height: '60px',
-                                border: '4px solid black',
-                                zIndex: isLast ? '0' : '1',
-                                pointerEvents: isLast && isNow ? 'none' : 'auto'
-                            }}>
+                                transform: "translateX(-50%)",
+                                background: "white",
+                                borderRadius: "36px",
+                                width: "60px",
+                                textAlign: "center",
+                                height: "60px",
+                                border: "4px solid black",
+                                zIndex: isLast ? "0" : "1",
+                                pointerEvents:
+                                    isLast && isNow ? "none" : "auto",
+                            }}
+                        >
                             <SitStandIcon
                                 entry={marker.entry}
                                 onClick={() => setEditingEntry(marker.entry)}
@@ -416,23 +431,9 @@ function App() {
                         </div>
                     );
                 })}
-                {durationMarkers.map((marker, i) => {
-                    return (
-                        <div
-                            key={i}
-                            style={{
-                                position: 'absolute',
-                                left: marker.position + '%',
-                                top: '50px',
-                                transform: 'translateX(-50%)',
-                                fontSize: 'smaller',
-                                color: '#555',
-                                textAlign: 'center',
-                            }}>
-                            {marker.formattedDuration}
-                        </div>
-                    );
-                })}
+                {durationMarkers.map((marker, i) => (
+                    <DurationMarker {...marker} key={i} />
+                ))}
             </Pane>
             <EditEntryForm
                 entry={editingEntry}
