@@ -12,6 +12,7 @@ import {
     ArrowLeftIcon,
     ArrowRightIcon,
     Button,
+    CalendarIcon,
     CircleArrowUpIcon,
     CircleArrowDownIcon,
     Pane,
@@ -198,6 +199,15 @@ function App() {
             });
     }
 
+    function goToToday() {
+        // TODO: Ideally we would not refresh the page here, but the logic I
+        // have for detecting start date as today is kind of faulty (see other
+        // TODO above in useEffect) so this will do for now
+        window.location.href =
+            window.location.origin +
+            window.location.pathname
+    }
+
     function goBackOneDay() {
         let startOfPrevious;
         let endOfPrevious;
@@ -215,8 +225,8 @@ function App() {
             {},
             null,
             window.location.origin +
-                window.location.pathname +
-                `?start=${startOfPrevious}&end=${endOfPrevious}`
+            window.location.pathname +
+            `?start=${startOfPrevious}&end=${endOfPrevious}`
         );
     }
 
@@ -236,8 +246,8 @@ function App() {
                 {},
                 null,
                 window.location.origin +
-                    window.location.pathname +
-                    `?start=${startOfPrevious}&end=${endOfPrevious}`
+                window.location.pathname +
+                `?start=${startOfPrevious}&end=${endOfPrevious}`
             );
         }
     }
@@ -332,6 +342,14 @@ function App() {
                     </Button>
                 </div>
                 <Pane display="flex">
+                    <Button
+                        onClick={() => goToToday()}
+                        height={24}
+                        marginRight="4px"
+                    >
+                        <CalendarIcon marginRight="4px" />
+                        Today
+                    </Button>
                     <Button
                         onClick={() => goBackOneDay()}
                         height={24}
