@@ -109,8 +109,9 @@ export function formatTime(date) {
   return `${pad(hours)}:${pad(minutes)}`;
 }
 
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 export function formatDate(date) {
-  return `${date.getMonth() + 1}-${date.getDate()}-${date
+  return `${DAYS[date.getDay()]}, ${date.getMonth() + 1}-${date.getDate()}-${date
     .getFullYear()
     .toString()
     .substr(2, 2)}`;
@@ -119,4 +120,3 @@ export function formatDate(date) {
 export function isToday(date) {
   return formatDate(new Date()) === formatDate(date);
 }
-
