@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import firebase from "firebase/app";
+// eslint-disable-next-line
 import * as firebaseui from "firebaseui";
 import "firebase/firestore";
 
@@ -143,7 +144,8 @@ function App() {
             smartGetEntries(db).then(setEntries);
             let { start } = parseStartAndEndDates();
 
-            let intervalId = setInterval(() => {
+            // This checks every 100 ms to handle when we change dates...
+            let dateIntervalId = setInterval(() => {
                 let { start: s } = parseStartAndEndDates();
                 if (s && s !== start) {
                     start = s;
@@ -151,7 +153,15 @@ function App() {
                 }
             }, 100);
 
-            return () => clearInterval(intervalId);
+            // This checks every 30 seconds to poll for new data
+            let dataIntervalId = setInterval(() => {
+                    smartGetEntries(db).then(setEntries);
+            }, 30000);
+
+            return () => {
+                clearInterval(dateIntervalId)
+                clearInterval(dataIntervalId)
+            };
         }
     }, [db]);
 
