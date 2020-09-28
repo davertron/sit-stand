@@ -204,8 +204,7 @@ function App() {
         // have for detecting start date as today is kind of faulty (see other
         // TODO above in useEffect) so this will do for now
         window.location.href =
-            window.location.origin +
-            window.location.pathname
+            window.location.origin + window.location.pathname;
     }
 
     function goBackOneDay() {
@@ -225,8 +224,8 @@ function App() {
             {},
             null,
             window.location.origin +
-            window.location.pathname +
-            `?start=${startOfPrevious}&end=${endOfPrevious}`
+                window.location.pathname +
+                `?start=${startOfPrevious}&end=${endOfPrevious}`
         );
     }
 
@@ -246,8 +245,8 @@ function App() {
                 {},
                 null,
                 window.location.origin +
-                window.location.pathname +
-                `?start=${startOfPrevious}&end=${endOfPrevious}`
+                    window.location.pathname +
+                    `?start=${startOfPrevious}&end=${endOfPrevious}`
             );
         }
     }
